@@ -285,6 +285,7 @@ let recognition = null;
 let isListening = false;
 let isSpeaking = false;
 let currentUtterance = null;
+let currentAudio = null;
 let speechSynthReady = false;
 
 // Init speech synthesis
@@ -369,6 +370,7 @@ function stopListening() {
 
 function stopSpeaking() {
   window.speechSynthesis.cancel();
+  if (currentAudio) { currentAudio.pause(); currentAudio = null; }
   isSpeaking = false;
   document.getElementById('stopBtn').classList.add('hidden');
   document.getElementById('stopBtn2').classList.add('hidden');
@@ -376,45 +378,49 @@ function stopSpeaking() {
 }
 
 function speak(text) {
-  if (!window.speechSynthesis) return;
   stopSpeaking();
 
-  // Clean text for speech — remove markdown
+  const VOICE_URL = 'https://naervaerk-server-production-e21f.up.railway.app/voice';
   const clean = text.replace(/[*_#`]/g, '').replace(/\n+/g, ' ');
 
-  const utterance = new SpeechSynthesisUtterance(clean);
-  utterance.lang = 'da-DK';
-  utterance.rate = 0.95;
-  utterance.pitch = 1.05;
+  isSpeaking = true;
+  setStatus('MAJA taler...', 'speaking');
+  document.getElementById('stopBtn').classList.remove('hidden');
+  document.getElementById('stopBtn2').classList.remove('hidden');
 
-  // Try to find a Danish voice
-  const voices = window.speechSynthesis.getVoices();
-  const daVoice = voices.find(v => v.lang.startsWith('da')) ||
-                  voices.find(v => v.lang.startsWith('nb')) ||
-                  voices.find(v => v.name.includes('Female')) ||
-                  voices[0];
-  if (daVoice) utterance.voice = daVoice;
-
-  utterance.onstart = () => {
-    isSpeaking = true;
-    setStatus('MAJA taler...', 'speaking');
-    document.getElementById('stopBtn').classList.remove('hidden');
-    document.getElementById('stopBtn2').classList.remove('hidden');
-  };
-  utterance.onend = () => {
+  fetch(VOICE_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ text: clean })
+  })
+  .then(res => {
+    if (!res.ok) throw new Error('Voice fejl');
+    return res.blob();
+  })
+  .then(blob => {
+    const audioUrl = URL.createObjectURL(blob);
+    currentAudio = new Audio(audioUrl);
+    currentAudio.onended = () => {
+      isSpeaking = false;
+      document.getElementById('stopBtn').classList.add('hidden');
+      document.getElementById('stopBtn2').classList.add('hidden');
+      setStatus('Tryk på mikrofonen for at tale med MAJA');
+    };
+    currentAudio.onerror = () => {
+      isSpeaking = false;
+      document.getElementById('stopBtn').classList.add('hidden');
+      document.getElementById('stopBtn2').classList.add('hidden');
+      setStatus('Tryk på mikrofonen for at tale med MAJA');
+    };
+    currentAudio.play();
+  })
+  .catch(err => {
+    console.error('Stemmefejl:', err);
     isSpeaking = false;
     document.getElementById('stopBtn').classList.add('hidden');
     document.getElementById('stopBtn2').classList.add('hidden');
     setStatus('Tryk på mikrofonen for at tale med MAJA');
-  };
-  utterance.onerror = () => {
-    isSpeaking = false;
-    document.getElementById('stopBtn').classList.add('hidden');
-    document.getElementById('stopBtn2').classList.add('hidden');
-  };
-
-  currentUtterance = utterance;
-  window.speechSynthesis.speak(utterance);
+  });
 }
 
 function addMessage(role, text) {
