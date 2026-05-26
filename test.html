@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MAJA Server Test</title>
+<style>
+  body { font-family: -apple-system, sans-serif; padding: 1.5rem; background: #f5f0e8; }
+  h1 { font-size: 1.2rem; }
+  button { padding: 1rem 1.5rem; font-size: 1rem; background: #c4845a; color: white; border: none; border-radius: 8px; margin: 0.5rem 0; width: 100%; }
+  .box { background: white; padding: 1rem; border-radius: 8px; white-space: pre-wrap; font-size: 0.8rem; word-break: break-all; margin-top: 0.8rem; border: 1px solid #ddd; }
+</style>
+</head>
+<body>
+<h1>MAJA Server Diagnostik</h1>
+
+<button onclick="test1()">Test 1: Kan vi nå serveren? (GET)</button>
+<div class="box" id="r1">Ikke testet</div>
+
+<button onclick="test2()">Test 2: Kan vi sende besked? (POST)</button>
+<div class="box" id="r2">Ikke testet</div>
+
+<script>
+async function test1() {
+  const r = document.getElementById('r1');
+  r.textContent = 'Tester GET...';
+  try {
+    const res = await fetch('https://naervaerk-server-production-e21f.up.railway.app/');
+    const text = await res.text();
+    r.textContent = 'OK! Status ' + res.status + '\n' + text;
+  } catch(err) {
+    r.textContent = 'FEJL: ' + err.name + '\n' + err.message;
+  }
+}
+
+async function test2() {
+  const r = document.getElementById('r2');
+  r.textContent = 'Tester POST...';
+  try {
+    const res = await fetch('https://naervaerk-server-production-e21f.up.railway.app/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ messages: [{ role: 'user', content: 'Hej' }] })
+    });
+    const text = await res.text();
+    r.textContent = 'Status ' + res.status + '\n\n' + text;
+  } catch(err) {
+    r.textContent = 'FEJL: ' + err.name + '\n' + err.message + '\n\nFuld fejl:\n' + err.stack;
+  }
+}
+</script>
+</body>
+</html>
