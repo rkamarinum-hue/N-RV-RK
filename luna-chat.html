@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LUNA · NÆRVÆRK</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;0,600;1,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --sand: #F5F0E8;
+  --warm-white: #FAFAF7;
+  --deep-forest: #1C2B1E;
+  --moss: #3D5C3F;
+  --sage: #7A9E7E;
+  --clay: #C4845A;
+  --clay-light: #E8C4A8;
+  --text-dark: #1C2B1E;
+  --text-mid: #4A5C4B;
+  --text-light: #8A9E8B;
+  --luna: #7A6E9E;
+}
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html, body { height:100%; }
+body {
+  font-family:'DM Sans',sans-serif; font-weight:300;
+  background:var(--warm-white); color:var(--text-dark);
+  display:flex; flex-direction:column;
+}
+
+/* HEADER */
+header {
+  background:rgba(250,250,247,.96); backdrop-filter:blur(12px);
+  border-bottom:1px solid rgba(28,43,30,.07);
+  padding:.9rem 2rem;
+  display:flex; align-items:center; gap:1rem;
+  flex-shrink:0;
+}
+.logo { font-family:'Fraunces',serif; font-size:1.1rem; font-weight:600; color:var(--deep-forest); letter-spacing:.08em; }
+.logo span { color:var(--clay); }
+.header-sep { width:1px; height:18px; background:rgba(28,43,30,.12); }
+.maja-badge {
+  display:flex; align-items:center; gap:.6rem;
+  background:var(--sand); border-radius:20px; padding:.4rem 1rem .4rem .55rem;
+}
+.maja-dot { width:8px; height:8px; border-radius:50%; background:#7A6E9E; }
+.maja-label { font-size:.78rem; color:var(--text-mid); letter-spacing:.04em; }
+.maja-name { font-family:'DM Sans',sans-serif; font-size:.92rem; font-weight:600; color:var(--deep-forest); letter-spacing:0.02em; }
+.online { display:flex; align-items:center; gap:.4rem; margin-left:auto; font-size:.75rem; color:var(--text-light); }
+.online-dot { width:7px; height:7px; border-radius:50%; background:#4CAF50; }
+
+/* CHAT AREA */
+.chat-area {
+  flex:1; overflow-y:auto; padding:2rem;
+  display:flex; flex-direction:column; gap:1.2rem;
+  scroll-behavior:smooth;
+}
+
+/* WELCOME */
+.welcome {
+  display:flex; flex-direction:column; align-items:center;
+  justify-content:center; text-align:center;
+  flex:1; padding:2rem; gap:1.2rem;
+  animation:fadeIn .6s ease;
+}
+.welcome-avatar {
+  width:72px; height:72px; background:var(--sand);
+  border-radius:50%; border:2px solid rgba(196,132,90,.2);
+  display:flex; align-items:center; justify-content:center;
+}
+.welcome-avatar svg { width:32px; height:32px; stroke:var(--clay); fill:none; stroke-width:1.6; stroke-linecap:round; stroke-linejoin:round; }
+.welcome h2 { font-family:'DM Sans',sans-serif; font-size:1.6rem; font-weight:400; color:var(--deep-forest); letter-spacing:0.01em; }
+.welcome h2 em { font-style:normal; color:var(--moss); font-weight:600; }
+.welcome p { font-size:.92rem; line-height:1.75; color:var(--text-mid); max-width:380px; }
+.welcome-hint { font-size:.8rem; color:var(--text-light); display:flex; align-items:center; gap:.4rem; margin-top:.4rem; }
+
+/* MESSAGES */
+.msg { display:flex; gap:.8rem; animation:msgIn .35s ease; max-width:680px; }
+.msg.user { flex-direction:row-reverse; align-self:flex-end; }
+.msg-avatar {
+  width:32px; height:32px; border-radius:50%; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center; margin-top:2px;
+}
+.msg-avatar.maja-av { background:var(--sand); border:1px solid rgba(196,132,90,.25); }
+.msg-avatar.maja-av svg { width:15px; height:15px; stroke:var(--clay); fill:none; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
+.msg-avatar.user-av { background:var(--moss); }
+.msg-avatar.user-av svg { width:14px; height:14px; stroke:#fff; fill:none; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
+.msg-bubble {
+  padding:.85rem 1.1rem; border-radius:14px;
+  font-size:.91rem; line-height:1.68; max-width:520px;
+}
+.msg.maja .msg-bubble { background:var(--sand); color:var(--text-dark); border-radius:3px 14px 14px 14px; }
+.msg.user .msg-bubble { background:var(--moss); color:#fff; border-radius:14px 3px 14px 14px; }
+.msg-name { font-size:.68rem; color:var(--text-light); margin-bottom:.28rem; letter-spacing:.04em; }
+.msg.user .msg-name { text-align:right; }
+
+/* TYPING INDICATOR */
+.typing-msg { display:flex; gap:.8rem; align-items:flex-end; animation:msgIn .3s ease; }
+.typing-bubble {
+  background:var(--sand); border-radius:3px 14px 14px 14px;
+  padding:.85rem 1.1rem; display:flex; gap:5px; align-items:center;
+}
+.t-dot { width:7px; height:7px; background:var(--sage); border-radius:50%; animation:tdot 1.3s ease-in-out infinite; }
+.t-dot:nth-child(2) { animation-delay:.22s; }
+.t-dot:nth-child(3) { animation-delay:.44s; }
+@keyframes tdot { 0%,60%,100%{transform:translateY(0);opacity:.5} 30%{transform:translateY(-5px);opacity:1} }
+
+/* BOTTOM BAR */
+.bottom-bar {
+  flex-shrink:0; background:rgba(250,250,247,.98);
+  border-top:1px solid rgba(28,43,30,.07);
+  padding:1.2rem 2rem;
+}
+
+/* STATUS TEXT */
+.status-text {
+  text-align:center; font-size:.8rem; color:var(--text-light);
+  margin-bottom:.9rem; min-height:1.1rem; letter-spacing:.02em;
+  transition:color .3s;
+}
+.status-text.listening { color:var(--clay); }
+.status-text.speaking { color:var(--moss); }
+
+/* CONTROLS */
+.controls { display:flex; align-items:center; justify-content:center; gap:1rem; }
+
+/* MIC BUTTON */
+.mic-btn {
+  width:64px; height:64px; border-radius:50%; border:none; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  transition:all .25s; position:relative;
+  background:var(--deep-forest);
+  box-shadow:0 4px 20px rgba(28,43,30,.25);
+}
+.mic-btn:hover { transform:scale(1.05); box-shadow:0 6px 24px rgba(28,43,30,.3); }
+.mic-btn svg { width:24px; height:24px; stroke:#fff; fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; position:relative; z-index:1; }
+.mic-btn.listening { background:var(--clay); }
+.mic-btn.listening::before {
+  content:''; position:absolute; inset:-8px; border-radius:50%;
+  border:2px solid var(--clay); opacity:.5;
+  animation:ripple 1.2s ease-out infinite;
+}
+.mic-btn.listening::after {
+  content:''; position:absolute; inset:-16px; border-radius:50%;
+  border:1.5px solid var(--clay); opacity:.25;
+  animation:ripple 1.2s ease-out infinite .4s;
+}
+@keyframes ripple { 0%{transform:scale(.9);opacity:.6} 100%{transform:scale(1.2);opacity:0} }
+.mic-btn:disabled { opacity:.45; cursor:not-allowed; transform:none; }
+
+/* STOP BUTTON */
+.stop-btn {
+  width:40px; height:40px; border-radius:50%; border:none; cursor:pointer;
+  background:rgba(28,43,30,.08); display:flex; align-items:center; justify-content:center;
+  transition:all .2s;
+}
+.stop-btn:hover { background:rgba(28,43,30,.15); }
+.stop-btn svg { width:14px; height:14px; fill:var(--text-mid); }
+.stop-btn.hidden { opacity:0; pointer-events:none; }
+
+/* TEXT INPUT */
+.text-row {
+  display:flex; gap:.7rem; align-items:center; margin-top:.9rem;
+}
+.text-input {
+  flex:1; background:var(--sand); border:1px solid rgba(28,43,30,.1);
+  border-radius:24px; padding:.65rem 1.1rem;
+  font-family:'DM Sans',sans-serif; font-size:.88rem; color:var(--text-dark);
+  outline:none; transition:border-color .2s;
+}
+.text-input:focus { border-color:rgba(196,132,90,.5); }
+.text-input::placeholder { color:var(--text-light); }
+.send-btn {
+  width:38px; height:38px; border-radius:50%; border:none; cursor:pointer;
+  background:var(--clay); display:flex; align-items:center; justify-content:center;
+  transition:background .2s; flex-shrink:0;
+}
+.send-btn:hover { background:#B5734A; }
+.send-btn svg { width:16px; height:16px; stroke:#fff; fill:none; stroke-width:2.2; stroke-linecap:round; stroke-linejoin:round; }
+.send-btn:disabled { opacity:.4; cursor:not-allowed; }
+
+/* HINT */
+.input-hint { text-align:center; font-size:.72rem; color:var(--text-light); margin-top:.7rem; }
+
+/* PERMISSION ERROR */
+.perm-notice {
+  background:rgba(196,132,90,.1); border:1px solid rgba(196,132,90,.25);
+  border-radius:8px; padding:.8rem 1rem; font-size:.82rem; color:var(--text-mid);
+  text-align:center; margin-bottom:.8rem; display:none;
+}
+
+@keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+@keyframes msgIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+
+@media (max-width:600px) {
+  .chat-area { padding:1.2rem; }
+  .bottom-bar { padding:1rem 1.2rem; }
+  .msg-bubble { font-size:.88rem; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">NÆRVÆRK<span>.</span></div>
+  <div class="header-sep"></div>
+  <div class="maja-badge">
+    <div class="maja-dot"></div>
+    <div>
+      <div class="maja-label">Pårørendassistent</div>
+      <div class="maja-name">LUNA</div>
+    </div>
+  </div>
+  <div class="online"><div class="online-dot"></div>Tilgængelig</div>
+</header>
+
+<div class="chat-area" id="chatArea">
+  <div class="welcome" id="welcome">
+    <div class="welcome-avatar">
+      <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+    </div>
+    <h2>Hej. Jeg er <em>LUNA</em>.</h2>
+    <p>Jeg er her for dig der står tæt på en med psykiske vanskeligheder. Du må gerne være træt, bekymret eller i tvivl — det hører til. Lad os finde vej sammen.</p>
+    <div class="welcome-hint">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/></svg>
+      Tryk på mikrofonen og tal — eller skriv nedenfor
+    </div>
+  </div>
+</div>
+
+<div class="bottom-bar">
+  <div class="perm-notice" id="permNotice">
+    Mikrofon-adgang blev afvist. Brug tekstfeltet nedenfor eller tillad mikrofon i browserindstillingerne.
+  </div>
+  <div class="status-text" id="statusText">Tryk på mikrofonen for at tale med LUNA</div>
+  <div class="controls">
+    <button class="stop-btn hidden" id="stopBtn" onclick="stopSpeaking()" title="Stop LUNA med at tale">
+      <svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/></svg>
+    </button>
+    <button class="mic-btn" id="micBtn" onclick="toggleMic()" title="Tal med LUNA">
+      <svg id="micIcon" viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+    </button>
+    <button class="stop-btn hidden" id="stopBtn2" onclick="stopSpeaking()" title="Stop">
+      <svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/></svg>
+    </button>
+  </div>
+  <div class="text-row">
+    <input class="text-input" id="textInput" type="text" placeholder="Eller skriv her..." onkeydown="handleKey(event)">
+    <button class="send-btn" id="sendBtn" onclick="sendText()">
+      <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+    </button>
+  </div>
+  <div class="input-hint">LUNA husker hvad I har talt om under samtalen</div>
+</div>
+
+<script>
+const SYSTEM_PROMPT = `Du er MAJA — en specialiseret familie- og børnerådgiver hos NÆRVÆRK.
+
+Du hjælper forældre med at forstå barnets adfærd, skabe ro i pressede situationer og udvikle konkrete handleplaner for hjem, skole og netværk. Du kombinerer familiebehandling, udviklingspsykologi, specialpædagogik og traumeforståelse med praksisnære råd, der styrker de voksne omkring barnet.
+
+Du er ikke en terapeut. Du er ikke en diagnoseudredner. Du er ikke en juridisk rådgiver. Du er den fagligt funderede, varme og direkte stemme, der hjælper forældre med at forstå hvad der foregår — og hvad de konkret kan gøre ved det.
+
+Din tone og tilgang:
+Du starter altid med at lytte og validere, før du guider. Forældre der henvender sig til dig bærer ofte på udmattelse, skyld og bekymring. De har brug for at blive set, før de kan tage imod råd. Læs hvad forælderen har brug for — tilpas dig. Du dømmer aldrig. Du moraliserer aldrig. Du taler varmt men direkte. Du undgår tomme fraser. Du giver svar der kan bruges i den virkelige hverdag.
+
+Hvad du hjælper med:
+1. Forståelse af barnets adfærd — angst, skam, overbelastning, kravpres, traume, tilknytningsusikkerhed, ADHD, autisme, PDA, skolevægring
+2. Akut rådgivning — hvad gør forælderen lige nu når barnet er i affekt, nægter, råber, slår, flygter eller lukker ned
+3. Forældrestøtte — ro, struktur og tydelige rammer uden magtkampe
+4. Familieanalyse — samspilsmønstre, hvad udløser konflikter, hvad kan ændres
+5. Fælles handleplan — hjem, skole og netværk i samme retning
+6. Professionel formulering — svære hverdagssituationer i fagligt brugbart sprog
+
+Du rådgiver ikke om medicinering — henvis til læge. Du stiller ikke diagnoser — du kan oplyse om dem. Du giver ikke juridisk rådgivning uden at henvise til konkrete kilder.
+
+Sikkerhed: Du handler efter dansk lovgivning. Ved fare for et barns sikkerhed: informér om underretningspligten, henvis til kommunen eller politiet (112). Ved forældres krise: henvis til Livslinjen (70 201 201). Bliv i samtalen og støt videre.
+
+Svarstruktur: Tilpas altid. Akutte situationer — kort og konkret. Forståelsesspørgsmål — psykologisk forklaring + handleretning. Undgå lange indledninger. Slut gerne med et næste skridt eller opfølgende spørgsmål.
+
+Grundholdning: Bag al svær adfærd ligger et barn der forsøger at klare sig. Bag al svær forælder ligger et menneske der prøver at gøre det rigtigt. Du giver aldrig op på en familie.
+
+Svar altid på dansk. Hold svar til tale — undgå lister og punkttegn da svarene bliver læst højt. Skriv i naturlige, sammenhængende sætninger.`;
+
+let messages = [];
+let recognition = null;
+let isListening = false;
+let isSpeaking = false;
+let currentUtterance = null;
+let currentAudio = null;
+let speechSynthReady = false;
+
+// Init speech synthesis
+window.speechSynthesis.onvoiceschanged = () => { speechSynthReady = true; };
+setTimeout(() => { speechSynthReady = true; }, 1000);
+
+// Speech Recognition setup
+const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+const hasRecognition = !!SpeechRecognition;
+
+if (!hasRecognition) {
+  document.getElementById('micBtn').disabled = true;
+  document.getElementById('micBtn').title = 'Talegenkendelse er ikke tilgængelig i denne browser. Brug Chrome.';
+  setStatus('Talegenkendelse ikke tilgængelig — brug tekstfeltet');
+}
+
+function setStatus(text, cls = '') {
+  const el = document.getElementById('statusText');
+  el.textContent = text;
+  el.className = 'status-text' + (cls ? ' ' + cls : '');
+}
+
+function toggleMic() {
+  if (isSpeaking) { stopSpeaking(); return; }
+  if (isListening) { stopListening(); } else { startListening(); }
+}
+
+function startListening() {
+  if (!hasRecognition) return;
+  stopSpeaking();
+
+  recognition = new SpeechRecognition();
+  recognition.lang = 'da-DK';
+  recognition.continuous = false;
+  recognition.interimResults = true;
+  recognition.maxAlternatives = 1;
+
+  recognition.onstart = () => {
+    isListening = true;
+    document.getElementById('micBtn').classList.add('listening');
+    setStatus('Lytter...', 'listening');
+  };
+
+  recognition.onresult = (e) => {
+    const transcript = Array.from(e.results).map(r => r[0].transcript).join('');
+    document.getElementById('textInput').value = transcript;
+    if (e.results[e.results.length - 1].isFinal) {
+      stopListening();
+      if (transcript.trim()) sendMessage(transcript.trim());
+    }
+  };
+
+  recognition.onerror = (e) => {
+    stopListening();
+    if (e.error === 'not-allowed') {
+      document.getElementById('permNotice').style.display = 'block';
+      setStatus('Mikrofon-adgang nægtet');
+    } else if (e.error === 'no-speech') {
+      setStatus('Ingen tale registreret — prøv igen');
+    } else {
+      setStatus('Fejl — prøv igen');
+    }
+  };
+
+  recognition.onend = () => {
+    if (isListening) stopListening();
+  };
+
+  try {
+    recognition.start();
+  } catch(e) {
+    setStatus('Kunne ikke starte mikrofon');
+  }
+}
+
+function stopListening() {
+  isListening = false;
+  document.getElementById('micBtn').classList.remove('listening');
+  setStatus('Tryk på mikrofonen for at tale med LUNA');
+  if (recognition) { try { recognition.stop(); } catch(e){} recognition = null; }
+}
+
+function stopSpeaking() {
+  window.speechSynthesis.cancel();
+  if (currentAudio) { currentAudio.pause(); currentAudio = null; }
+  isSpeaking = false;
+  document.getElementById('stopBtn').classList.add('hidden');
+  document.getElementById('stopBtn2').classList.add('hidden');
+  setStatus('Tryk på mikrofonen for at tale med LUNA');
+}
+
+function speak(text) {
+  stopSpeaking();
+
+  const VOICE_URL = 'https://naervaerk-server-production-e21f.up.railway.app/voice';
+  const clean = text.replace(/[*_#`]/g, '').replace(/\n+/g, ' ');
+
+  isSpeaking = true;
+  setStatus('LUNA taler...', 'speaking');
+  document.getElementById('stopBtn').classList.remove('hidden');
+  document.getElementById('stopBtn2').classList.remove('hidden');
+
+  fetch(VOICE_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ text: clean })
+  })
+  .then(res => {
+    if (!res.ok) throw new Error('Voice fejl');
+    return res.blob();
+  })
+  .then(blob => {
+    const audioUrl = URL.createObjectURL(blob);
+    currentAudio = new Audio(audioUrl);
+    currentAudio.onended = () => {
+      isSpeaking = false;
+      document.getElementById('stopBtn').classList.add('hidden');
+      document.getElementById('stopBtn2').classList.add('hidden');
+      setStatus('Tryk på mikrofonen for at tale med LUNA');
+    };
+    currentAudio.onerror = () => {
+      isSpeaking = false;
+      document.getElementById('stopBtn').classList.add('hidden');
+      document.getElementById('stopBtn2').classList.add('hidden');
+      setStatus('Tryk på mikrofonen for at tale med LUNA');
+    };
+    currentAudio.play();
+  })
+  .catch(err => {
+    console.error('Stemmefejl:', err);
+    isSpeaking = false;
+    document.getElementById('stopBtn').classList.add('hidden');
+    document.getElementById('stopBtn2').classList.add('hidden');
+    setStatus('Tryk på mikrofonen for at tale med LUNA');
+  });
+}
+
+function addMessage(role, text) {
+  // Hide welcome
+  const welcome = document.getElementById('welcome');
+  if (welcome) welcome.style.display = 'none';
+
+  const area = document.getElementById('chatArea');
+  const div = document.createElement('div');
+  div.className = `msg ${role}`;
+
+  const isMaja = role === 'maja';
+  div.innerHTML = `
+    <div class="msg-avatar ${isMaja ? 'maja-av' : 'user-av'}">
+      ${isMaja
+        ? `<svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>`
+        : `<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a6 6 0 0 1 12 0v2"/></svg>`
+      }
+    </div>
+    <div>
+      <div class="msg-name">${isMaja ? 'LUNA' : 'Dig'}</div>
+      <div class="msg-bubble">${text.replace(/\n/g, '<br>')}</div>
+    </div>`;
+  area.appendChild(div);
+  area.scrollTop = area.scrollHeight;
+}
+
+function showTyping() {
+  const welcome = document.getElementById('welcome');
+  if (welcome) welcome.style.display = 'none';
+
+  const area = document.getElementById('chatArea');
+  const div = document.createElement('div');
+  div.className = 'typing-msg'; div.id = 'typingIndicator';
+  div.innerHTML = `
+    <div class="msg-avatar maja-av">
+      <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+    </div>
+    <div>
+      <div class="msg-name">LUNA</div>
+      <div class="typing-bubble"><div class="t-dot"></div><div class="t-dot"></div><div class="t-dot"></div></div>
+    </div>`;
+  area.appendChild(div);
+  area.scrollTop = area.scrollHeight;
+}
+
+function removeTyping() {
+  const t = document.getElementById('typingIndicator');
+  if (t) t.remove();
+}
+
+async function sendMessage(text) {
+  if (!text.trim()) return;
+  document.getElementById('textInput').value = '';
+  document.getElementById('sendBtn').disabled = true;
+  document.getElementById('micBtn').disabled = true;
+
+  addMessage('user', text);
+  messages.push({ role: 'user', content: text });
+
+  setStatus('LUNA tænker...');
+  showTyping();
+
+  // SKIFT DIN SERVER URL HER efter deployment på Railway:
+  const SERVER_URL = 'https://naervaerk-server-production-e21f.up.railway.app/luna';
+
+  try {
+    const res = await fetch(SERVER_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ messages })
+    });
+
+    const data = await res.json();
+    removeTyping();
+
+    const reply = data.reply || 'Beklager, jeg kunne ikke svare. Prøv igen.';
+    messages.push({ role: 'assistant', content: reply });
+    addMessage('maja', reply);
+    speak(reply);
+
+  } catch(err) {
+    removeTyping();
+    const errMsg = 'Der opstod en fejl. Tjek din internetforbindelse og prøv igen.';
+    addMessage('maja', errMsg);
+    setStatus('Fejl — prøv igen');
+  }
+
+  document.getElementById('sendBtn').disabled = false;
+  document.getElementById('micBtn').disabled = false;
+}
+
+function sendText() {
+  const val = document.getElementById('textInput').value.trim();
+  if (val) sendMessage(val);
+}
+
+function handleKey(e) {
+  if (e.key === 'Enter') sendText();
+}
+</script>
+</body>
+</html>
