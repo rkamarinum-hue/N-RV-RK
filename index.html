@@ -361,6 +361,29 @@ footer {
 .fade-in { opacity:0; transform:translateY(16px); transition:opacity .6s ease, transform .6s ease; }
 .fade-in.visible { opacity:1; transform:translateY(0); }
 
+/* ── HERO EXAMPLE (mobile only) ── */
+.hero-example { display:none; }
+@media (max-width:920px) {
+  .hero-example {
+    display:block; margin-top:2.5rem;
+    background:#fff; border:1px solid rgba(28,43,30,.08);
+    border-radius:14px; padding:1.5rem;
+    box-shadow:0 8px 30px rgba(28,43,30,.06);
+  }
+  .hero-example-label {
+    font-size:.68rem; letter-spacing:.1em; text-transform:uppercase;
+    color:var(--clay); font-weight:500; margin-bottom:1rem;
+  }
+  .hero-example-q {
+    font-size:.92rem; line-height:1.6; color:var(--text-dark);
+    font-weight:500; margin-bottom:.9rem;
+  }
+  .hero-example-a {
+    font-size:.9rem; line-height:1.65; color:var(--text-mid);
+    padding-top:.9rem; border-top:1px solid rgba(28,43,30,.07);
+  }
+}
+
 /* ── MOBILE ── */
 @media (max-width:920px) {
   nav { padding:1rem 1.6rem; }
@@ -371,7 +394,7 @@ footer {
   .trust-item { font-size:.74rem; }
   .hero { grid-template-columns:1fr; min-height:auto; }
   .hero-left { padding:3.5rem 1.8rem 3rem; }
-  .hero-right { min-height:300px; }
+  .hero-right { display:none; }
   .who-section,.knowledge-section,.assistants-section,.pricing-section { padding:4rem 1.8rem; }
   .privacy-section { padding:4rem 1.8rem; grid-template-columns:1fr; gap:2.4rem; }
   footer { padding:2rem 1.8rem; flex-direction:column; align-items:flex-start; gap:1.1rem; }
@@ -385,8 +408,6 @@ footer {
 }
 @media (max-width:500px) {
   .who-grid { grid-template-columns:1fr; }
-  .hero-right { min-height:260px; }
-  .chat-card { width:260px; }
   .cookie { flex-direction:column; align-items:flex-start; }
 }
 </style>
@@ -446,6 +467,11 @@ footer {
     <div class="hero-actions">
       <a href="maja-chat.html" class="btn-primary">Tal med MAJA</a>
       <a href="#assistants" class="btn-ghost">Se alle assistenter</a>
+    </div>
+    <div class="hero-example">
+      <div class="hero-example-label">Sådan kan en samtale lyde</div>
+      <p class="hero-example-q">"Mit barn og jeg ender i kamp hver aften. Jeg mister mig selv fuldstændigt."</p>
+      <p class="hero-example-a">Det du beskriver er ikke svaghed — det er et nervesystem der har båret meget for længe. Lad os se på hvad der sker lige inden det eskalerer.</p>
     </div>
   </div>
   <div class="hero-right">
